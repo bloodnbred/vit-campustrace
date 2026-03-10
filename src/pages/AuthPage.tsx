@@ -38,7 +38,7 @@ export default function AuthPage() {
         toast.success("Welcome back!");
         navigate("/dashboard");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
           options: {
@@ -47,6 +47,14 @@ export default function AuthPage() {
           },
         });
         if (error) throw error;
+
+        // Update profile with extra fields
+        if (data.user) {
+          await supabase
+            .from("profiles")
+            .update({ roll_number: form.rollNumber, phone: form.phone, name: form.name })
+            .eq("user_id", data.user.id);
+        }
 
         toast.success("Account created! Please check your email to verify your account.");
       }
