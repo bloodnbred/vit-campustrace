@@ -23,7 +23,7 @@ interface LocationOption {
 
 export default function ReportItem() {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const [type, setType] = useState<"lost" | "found">("lost");
   const [locations, setLocations] = useState<LocationOption[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -34,13 +34,14 @@ export default function ReportItem() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       toast.error("Please sign in to report an item.");
       navigate("/auth");
       return;
     }
     fetchLocations();
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchLocations = async () => {
     const { data } = await supabase.from("campus_locations").select("*").order("name");
@@ -118,6 +119,15 @@ export default function ReportItem() {
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
