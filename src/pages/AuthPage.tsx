@@ -56,7 +56,8 @@ export default function AuthPage() {
             .eq("user_id", data.user.id);
         }
 
-        toast.success("Account created! Please check your email to verify your account.");
+        toast.success("Account created! Welcome to CampusTrace!");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast.error(error.message);
