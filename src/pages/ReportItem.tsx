@@ -23,7 +23,7 @@ interface LocationOption {
 
 export default function ReportItem() {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const [type, setType] = useState<"lost" | "found">("lost");
   const [locations, setLocations] = useState<LocationOption[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
