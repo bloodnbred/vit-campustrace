@@ -45,23 +45,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          // Fetch profile
-          const { data: profileData } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("user_id", session.user.id)
-            .single();
-          setProfile(profileData);
+          try {
+            // Use setTimeout to avoid Supabase auth deadlock
+            setTimeout(async () => {
+              try {
+                const { data: profileData } = await supabase
+                  .from("profiles")
+                  .select("*")
+                  .eq("user_id", session.user.id)
+                  .single();
+                setProfile(profileData);
 
-          // Check admin role
-          const { data: roleData } = await supabase
-            .rpc("has_role", { _user_id: session.user.id, _role: "admin" });
-          setIsAdmin(!!roleData);
+                const { data: roleData } = await supabase
+                  .rpc("has_role", { _user_id: session.user.id, _role: "admin" });
+                setIsAdmin(!!roleData);
+              } catch (err) {
+                console.error("Error fetching profile/role:", err);
+              } finally {
+                setLoading(false);
+              }
+            }, 0);
+          } catch (err) {
+            console.error("Auth state change error:", err);
+            setLoading(false);
+          }
         } else {
           setProfile(null);
           setIsAdmin(false);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
