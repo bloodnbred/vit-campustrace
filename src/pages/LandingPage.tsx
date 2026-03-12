@@ -28,10 +28,10 @@ export default function LandingPage() {
           </div>
 
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="max-w-2xl">
-            <h1 className="font-display text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
+            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-4 sm:mb-6">
               Smart Campus<br /><span className="text-primary">Lost & Found</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-lg">
+            <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-lg">
               Stop scrolling through endless WhatsApp messages. Report, search, and recover lost items across your campus with ease.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -46,25 +46,13 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }} className="grid grid-cols-3 gap-6 mt-16 max-w-md">
-            {[
-              { value: "150+", label: "Items Recovered" },
-              { value: "500+", label: "Active Users" },
-              { value: "20+", label: "Campus Locations" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="font-display text-3xl font-bold text-primary">{stat.value}</div>
-                <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold text-center mb-12 text-foreground">Why CampusTrace?</h2>
-          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             {features.map((f, i) => (
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="glass-card p-6 text-center">
                 <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center mx-auto mb-4">
