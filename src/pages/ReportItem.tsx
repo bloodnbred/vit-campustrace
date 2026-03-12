@@ -34,13 +34,14 @@ export default function ReportItem() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       toast.error("Please sign in to report an item.");
       navigate("/auth");
       return;
     }
     fetchLocations();
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchLocations = async () => {
     const { data } = await supabase.from("campus_locations").select("*").order("name");
