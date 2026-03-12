@@ -31,7 +31,7 @@ export default function LandingPage() {
             <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-4 sm:mb-6">
               Smart Campus<br /><span className="text-primary">Lost & Found</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-lg">
+            <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-lg">
               Stop scrolling through endless WhatsApp messages. Report, search, and recover lost items across your campus with ease.
             </p>
             <div className="flex flex-wrap gap-3">
