@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, MapPin, Plus, LayoutDashboard, Shield, LogOut, Menu, X, LogIn } from "lucide-react";
+import { Search, MapPin, Plus, LayoutDashboard, Shield, LogOut, Menu, X, LogIn, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +11,17 @@ export function Navbar() {
   const navigate = useNavigate();
   const { user, profile, isAdmin, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
 
   const navItems = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -50,14 +61,17 @@ export function Navbar() {
                 </Button>
               </Link>
             ))}
+            <Button variant="ghost" size="icon" className="ml-1" onClick={() => setDark(!dark)}>
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
             {user ? (
-              <Button variant="ghost" size="sm" className="gap-2 text-sm ml-2" onClick={handleSignOut}>
+              <Button variant="ghost" size="sm" className="gap-2 text-sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
                 {profile?.name || "Sign Out"}
               </Button>
             ) : (
               <Link to="/auth">
-                <Button variant="outline" size="sm" className="gap-2 text-sm ml-2">
+                <Button variant="outline" size="sm" className="gap-2 text-sm">
                   <LogIn className="w-4 h-4" /> Sign In
                 </Button>
               </Link>
@@ -89,6 +103,10 @@ export function Navbar() {
                   </Button>
                 </Link>
               ))}
+              <Button variant="ghost" className="w-full justify-start gap-2" onClick={() => setDark(!dark)}>
+                {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {dark ? "Light Mode" : "Dark Mode"}
+              </Button>
               {user ? (
                 <Button variant="ghost" className="w-full justify-start gap-2" onClick={() => { handleSignOut(); setMobileOpen(false); }}>
                   <LogOut className="w-4 h-4" /> Sign Out
