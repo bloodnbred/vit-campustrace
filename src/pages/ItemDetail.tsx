@@ -42,6 +42,22 @@ export default function ItemDetail() {
     },
   });
 
+  // Must be before any early returns to follow Rules of Hooks
+  const isReporter = !!(user && item && user.id === item.reporterId);
+  const { data: claims = [] } = useQuery({
+    queryKey: ["claims", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("claim_requests")
+        .select("*")
+        .eq("item_id", id!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: isReporter,
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -59,22 +75,6 @@ export default function ItemDetail() {
       </div>
     );
   }
-
-  // Fetch claim requests for the reporter
-  const isReporter = user && item && user.id === item.reporterId;
-  const { data: claims = [] } = useQuery({
-    queryKey: ["claims", id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("claim_requests")
-        .select("*")
-        .eq("item_id", id!)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!isReporter,
-  });
 
   const handleClaimAction = async (claimId: string, action: "accepted" | "rejected") => {
     try {
