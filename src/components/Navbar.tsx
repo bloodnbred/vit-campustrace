@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, MapPin, Plus, LayoutDashboard, Shield, LogOut, Menu, X, LogIn } from "lucide-react";
+import { Search, MapPin, Plus, LayoutDashboard, Shield, LogOut, Menu, X, LogIn, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
