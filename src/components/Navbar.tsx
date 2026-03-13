@@ -61,14 +61,17 @@ export function Navbar() {
                 </Button>
               </Link>
             ))}
+            <Button variant="ghost" size="icon" className="ml-1" onClick={() => setDark(!dark)}>
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
             {user ? (
-              <Button variant="ghost" size="sm" className="gap-2 text-sm ml-2" onClick={handleSignOut}>
+              <Button variant="ghost" size="sm" className="gap-2 text-sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
                 {profile?.name || "Sign Out"}
               </Button>
             ) : (
               <Link to="/auth">
-                <Button variant="outline" size="sm" className="gap-2 text-sm ml-2">
+                <Button variant="outline" size="sm" className="gap-2 text-sm">
                   <LogIn className="w-4 h-4" /> Sign In
                 </Button>
               </Link>
