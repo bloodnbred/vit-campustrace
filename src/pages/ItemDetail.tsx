@@ -60,6 +60,36 @@ export default function ItemDetail() {
     );
   }
 
+  // Fetch claim requests for the reporter
+  const isReporter = user && item && user.id === item.reporterId;
+  const { data: claims = [] } = useQuery({
+    queryKey: ["claims", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("claim_requests")
+        .select("*")
+        .eq("item_id", id!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!isReporter,
+  });
+
+  const handleClaimAction = async (claimId: string, action: "accepted" | "rejected") => {
+    try {
+      await supabase.from("claim_requests").update({ status: action }).eq("id", claimId);
+      if (action === "accepted") {
+        await supabase.from("items").update({ status: "returned" }).eq("id", item!.id);
+      }
+      toast.success(`Claim ${action}!`);
+      queryClient.invalidateQueries({ queryKey: ["claims", id] });
+      queryClient.invalidateQueries({ queryKey: ["item", id] });
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
   const copyPhone = () => {
     navigator.clipboard.writeText(item.reporterPhone);
     toast.success("Phone number copied!");
