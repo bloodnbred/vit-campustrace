@@ -102,8 +102,8 @@ export default function AuthPage() {
                     <Input id="rollNumber" name="rollNumber" placeholder="CS2024001" value={form.rollNumber} onChange={handleChange} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" name="phone" placeholder="+91 98765 43210" value={form.phone} onChange={handleChange} />
+                    <Label htmlFor="phone">Phone <span className="text-destructive">*</span></Label>
+                    <Input id="phone" name="phone" placeholder="+91 98765 43210" value={form.phone} onChange={handleChange} required />
                   </div>
                 </div>
               </>

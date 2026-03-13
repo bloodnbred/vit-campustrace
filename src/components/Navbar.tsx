@@ -103,6 +103,10 @@ export function Navbar() {
                   </Button>
                 </Link>
               ))}
+              <Button variant="ghost" className="w-full justify-start gap-2" onClick={() => setDark(!dark)}>
+                {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {dark ? "Light Mode" : "Dark Mode"}
+              </Button>
               {user ? (
                 <Button variant="ghost" className="w-full justify-start gap-2" onClick={() => { handleSignOut(); setMobileOpen(false); }}>
                   <LogOut className="w-4 h-4" /> Sign Out

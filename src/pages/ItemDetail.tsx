@@ -181,6 +181,45 @@ export default function ItemDetail() {
               )}
             </div>
 
+            {/* Claim requests section for reporter */}
+            {isReporter && claims.length > 0 && (
+              <div className="glass-card p-5 !transform-none space-y-4">
+                <h3 className="font-display font-semibold text-card-foreground">
+                  Claim Requests ({claims.length})
+                </h3>
+                {claims.map((claim: any) => (
+                  <div key={claim.id} className="border border-border rounded-lg p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-sm text-foreground">{claim.claimant_name}</span>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                        claim.status === "pending" ? "bg-accent text-accent-foreground" :
+                        claim.status === "accepted" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300" :
+                        "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                      }`}>
+                        {claim.status === "pending" && <Clock className="w-3 h-3 inline mr-1" />}
+                        {claim.status === "accepted" && <CheckCircle className="w-3 h-3 inline mr-1" />}
+                        {claim.status === "rejected" && <XCircle className="w-3 h-3 inline mr-1" />}
+                        {claim.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{claim.explanation}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(claim.created_at).toLocaleString()}</p>
+                    {claim.status === "pending" && (
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" variant="default" className="gap-1" onClick={() => handleClaimAction(claim.id, "accepted")}>
+                          <CheckCircle className="w-3 h-3" /> Accept
+                        </Button>
+                        <Button size="sm" variant="outline" className="gap-1" onClick={() => handleClaimAction(claim.id, "rejected")}>
+                          <XCircle className="w-3 h-3" /> Reject
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Claim form for non-reporters */}
             {item.status !== "returned" && user && user.id !== item.reporterId && (
               <div className="glass-card p-5 !transform-none">
                 <h3 className="font-display font-semibold text-card-foreground mb-3">Claim This Item</h3>
