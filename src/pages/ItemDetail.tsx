@@ -14,6 +14,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 export default function ItemDetail() {
   const { id } = useParams();
   const { user, profile } = useAuth();
+  const queryClient = useQueryClient();
   const [claimText, setClaimText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
