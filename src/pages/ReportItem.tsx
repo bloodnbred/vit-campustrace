@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, Send, Loader2, X } from "lucide-react";
+import { Upload, Send, Loader2, X, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,8 @@ export default function ReportItem() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [classifying, setClassifying] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -57,6 +59,34 @@ export default function ReportItem() {
     }
   };
 
+  const classifyImage = async (file: File) => {
+    setClassifying(true);
+    setAiConfidence(null);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const { data, error } = await supabase.functions.invoke("classify-item", {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      if (data?.category && CATEGORIES.includes(data.category)) {
+        setSelectedCategory(data.category);
+        setAiConfidence(data.confidence);
+        toast.success(`AI detected: ${data.category} (${Math.round(data.confidence * 100)}% confidence)`, {
+          icon: <Sparkles className="w-4 h-4 text-primary" />,
+        });
+      }
+    } catch (err) {
+      console.error("Classification failed:", err);
+      // Silently fail - user can still select manually
+    } finally {
+      setClassifying(false);
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -66,6 +96,7 @@ export default function ReportItem() {
       }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      classifyImage(file);
     }
   };
 
@@ -157,10 +188,57 @@ export default function ReportItem() {
               <Textarea id="description" name="description" placeholder="Provide details like color, brand, distinguishing marks..." rows={4} required />
             </div>
 
+            {/* Image upload BEFORE category so AI can auto-fill */}
+            <div className="space-y-2">
+              <Label>Upload Image</Label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              {imagePreview ? (
+                <div className="relative rounded-xl overflow-hidden border border-border">
+                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setImageFile(null); setImagePreview(null); setAiConfidence(null); }}
+                    className="absolute top-2 right-2 bg-background/80 rounded-full p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  {classifying && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-sm py-2 px-3 flex items-center gap-2">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      AI is analyzing the image...
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                >
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 5MB • AI will auto-detect category</p>
+                </div>
+              )}
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Category</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory} required>
+                <Label className="flex items-center gap-2">
+                  Category
+                  {aiConfidence !== null && (
+                    <span className="inline-flex items-center gap-1 text-xs font-normal text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                      <Sparkles className="w-3 h-3" />
+                      AI {Math.round(aiConfidence * 100)}%
+                    </span>
+                  )}
+                </Label>
+                <Select value={selectedCategory} onValueChange={(val) => { setSelectedCategory(val); setAiConfidence(null); }} required>
                   <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
                   <SelectContent>
                     {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -183,39 +261,7 @@ export default function ReportItem() {
               <Input id="date" name="date" type="date" required />
             </div>
 
-            <div className="space-y-2">
-              <Label>Upload Image</Label>
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              {imagePreview ? (
-                <div className="relative rounded-xl overflow-hidden border border-border">
-                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => { setImageFile(null); setImagePreview(null); }}
-                    className="absolute top-2 right-2 bg-background/80 rounded-full p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                >
-                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
-                </div>
-              )}
-            </div>
-
-            <Button type="submit" size="lg" className="w-full gap-2 shadow-md" disabled={loading}>
+            <Button type="submit" size="lg" className="w-full gap-2 shadow-md" disabled={loading || classifying}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               Submit Report
             </Button>
