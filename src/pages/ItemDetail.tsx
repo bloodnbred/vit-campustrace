@@ -241,6 +241,8 @@ export default function ItemDetail() {
             )}
           </div>
         </motion.div>
+
+        <PossibleMatches itemId={item.id} itemStatus={item.status} />
       </div>
     </div>
   );
