@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Copy, Send, MapPin, Calendar, User, ArrowLeft, Tag, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { PossibleMatches } from "@/components/PossibleMatches";
 import { toast } from "sonner";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -240,6 +241,8 @@ export default function ItemDetail() {
             )}
           </div>
         </motion.div>
+
+        <PossibleMatches itemId={item.id} itemStatus={item.status} />
       </div>
     </div>
   );
