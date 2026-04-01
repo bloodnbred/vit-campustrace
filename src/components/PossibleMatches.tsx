@@ -78,7 +78,7 @@ export function PossibleMatches({ itemId, itemStatus }: PossibleMatchesProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
             >
-              <Link to={`/item/${match.id}`} className="block group">
+              <Link to={`/items/${match.id}`} className="block group">
                 <div className="glass-card overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative">
                     <img
